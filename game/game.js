@@ -65,7 +65,7 @@ function init() {
 	polygon.setCenter(25, 25);
 	
 	var e = GAME.EntityManager.create();
-	GAME.EntityManager.addComponent(e, new CPos(50, 50));
+	GAME.EntityManager.addComponent(e, new CPos(50, 50))
 	GAME.EntityManager.addComponent(e, new CVelocity(0, 0));
 	GAME.EntityManager.addComponent(e, new CAccel(60));
 	GAME.EntityManager.addComponent(e, new CRender(1));
