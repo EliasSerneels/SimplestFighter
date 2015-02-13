@@ -733,21 +733,21 @@ TOOLBOX.SAT = {
 		var overlap = 0; // The amount of overlap, needed to determine the resulting vector
 		var smallestOverlapAxis = null;
 		
-		for(var n = 0; n < p1.vertices.length; n++) { // Test polygon 1 edges
+		for(var n=0; n < p1.vertices.length; n++) { // Test polygon 1 edges
 			var v1 = p1.vertices[n]; // First vector of the side
 			var v2 = p1.vertices[(n + 1) % p1.vertices.length]; // Second vector of the side ("%" cycle through the polygon until first vector)
 			
-			var edge = v1.substract(v2);
+			var edge = v2.substract(v1);
 			var axis = edge.perp(); // Find the side's normal...
 			axis = axis.normalize(); // ...and make it a unit vector
 			
 			var p1Interval = this._PolyInterval(axis, p1);
 			var p2Interval = this._PolyInterval(axis, p2);
 			
-			if(!this._PolyToPolyOverlap(axis, p1Interval, p2Interval)) { // If there is no overlap
+			if(!this._PolyToPolyOverlap(p1Interval, p2Interval)) { // If there is no overlap
 				return false; // No overlap (exit loop)
 			} else { // ... but if there IS an overlap:
-				var overlapOfThisAxis = this._PolyToPolyOverlap(axis, p1Interval, p2Interval);
+				var overlapOfThisAxis = this._PolyToPolyOverlap(p1Interval, p2Interval);
 				
 				// Check for containment
 				/* TODO
@@ -772,21 +772,25 @@ TOOLBOX.SAT = {
 			}
 		}
 		
-		for(var n = 0; n < p2.vertices.length; n++) { // Test polygon 2 edges
+		for(var n=0; n < p2.vertices.length; n++) { // Test polygon 2 edges
 			var v1 = p2.vertices[n]; // First vector of the side
 			var v2 = p2.vertices[(n + 1) % p2.vertices.length]; // Second vector of the side ("%" cycle through the polygon until first vector)
 			
-			var edge = v1.substract(v2);
+			var edge = v2.substract(v1);
 			var axis = edge.perp(); // Find the side's normal...
 			axis = axis.normalize(); // ...and make it a unit vector
 			
-			if(!this._PolyToPolyOverlap(axis, p2Interval, p1Interval)) { // If there is no overlap
+			var p1Interval = this._PolyInterval(axis, p1);
+			var p2Interval = this._PolyInterval(axis, p2);
+			
+			if(!this._PolyToPolyOverlap(p2Interval, p1Interval)) { // If there is no overlap
 				return false; // No overlap (exit loop)
 			} else { // ... but if there IS an overlap:
-				var overlapOfThisAxis = this._PolyToPolyOverlap(axis, p2Interval, p1Interval);
+				var overlapOfThisAxis = this._PolyToPolyOverlap(p2Interval, p1Interval);
+				
 				if(overlapOfThisAxis < overlap || overlap === 0) { // If the new overlap is smaller, or it's the first overlap
 					overlap = overlapOfThisAxis; // The smallest overlap found until now
-					smallestOverlapAxis = axis; // Take the current axis as the smallest until a smaller overlap is found
+					smallestOverlapAxis = axis; // Take the current axis until a smaller overlap is found
 				}
 			}
 		}
@@ -796,7 +800,20 @@ TOOLBOX.SAT = {
 		// If we haven't exited by now there is an overlap on each side of each polygon and we have a collision, return resulting vector
 		// Resulting vector = MTV = Minimum Translation vector
 		// The coords are the axis (normalised direction) * the overlap (size of overlap)
-		return new TOOLBOX.Vector(smallestOverlapAxis.x * overlap, smallestOverlapAxis.y * overlap);
+		
+		
+		// Create the resulting vector (Minimum Translation Vector)
+		var MTV = new TOOLBOX.Vector(smallestOverlapAxis.x * overlap, smallestOverlapAxis.y * overlap);
+		
+		// Return the resulting vector, always from first to next polygon (so check with direction of the vector from centerA to centerB)
+		var ca = p1.center;
+		var cb = p2.center;
+		var cacb = ca.substract(cb);
+		if(MTV.dotProduct(cacb) < 0) {
+			MTV.negate();
+		}
+		
+		return MTV;
 	},
 	
 	// Checks if a polygon and a circle are overlapping

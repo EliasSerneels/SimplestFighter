@@ -208,22 +208,22 @@ SCollisionDetection.process = function(collidableIdList) {
 				case "circle" && "circle":
 					var testCircleOne = this._circlePlusPos(testCShapeOne.shapeToolboxObject, this.EntityManager.getComponent(i, 'CPos'));
 					var testCircleTwo = this._circlePlusPos(testCShapeTwo.shapeToolboxObject, this.EntityManager.getComponent(j, 'CPos'));
-					var resultingVector = this._CircleToCircle(testCircleOne, testCircleTwo);
+					var resultingVector = TOOLBOX.SAT.CircleToCircle(testCircleOne, testCircleTwo);
 					break;
 				case "poly" && "poly":
 					var testPolyOne = this._polyPlusPos(testCShapeOne.shapeToolboxObject, this.EntityManager.getComponent(i, 'CPos'));
 					var testPolyTwo = this._polyPlusPos(testCShapeTwo.shapeToolboxObject, this.EntityManager.getComponent(j, 'CPos'));
-					var resultingVector = this._PolyToPoly(testPolyOne, testPolyTwo);
+					var resultingVector = TOOLBOX.SAT.PolyToPoly(testPolyOne, testPolyTwo);
 					break;
 				case "poly" && "circle":
 					var testPoly = this._polyPlusPos(testCShapeOne.shapeToolboxObject, this.EntityManager.getComponent(i, 'CPos'));
 					var testCircle = this._circlePlusPos(testCShapeTwo.shapeToolboxObject, this.EntityManager.getComponent(j, 'CPos'));
-					var resultingVector = this._PolyToCircle(testPoly, testCircle);
+					var resultingVector = TOOLBOX.SAT.PolyToCircle(testPoly, testCircle);
 					break;
 				case "circle" && "poly":
 					var testCircle = this._circlePlusPos(testCShapeOne.shapeToolboxObject, this.EntityManager.getComponent(i, 'CPos'));
 					var testPoly = this._polyPlusPos(testCShapeTwo.shapeToolboxObject, this.EntityManager.getComponent(j, 'CPos'));
-					var resultingVector = this._PolyToCircle(testCircle, testPoly);
+					var resultingVector = TOOLBOX.SAT.PolyToCircle(testCircle, testPoly);
 					break;
 			}
 			
@@ -259,133 +259,6 @@ SCollisionDetection._polyPlusPos = function(poly, CPos) {
 	}
 	newPoly.setCenter(poly.center.x + CPos.vector.x, poly.center.y + CPos.vector.y);
 	return newPoly;
-}
-
-// Checks if 2 polygons are overlapping
-// @param p1 The first polygon (list of vectors)
-// @param p2 The second polygon (list of vectors)
-// @return false if they don't overlap, a resulting vector if they do
-SCollisionDetection._PolyToPoly = function(p1, p2) {
-	var overlap = 0; // The amount of overlap, needed to determine the resulting vector
-	var smallestOverlapAxis = null;
-	
-	for(var n=0; n < p1.vertices.length; n++) { // Test polygon 1 edges
-		var v1 = p1.vertices[n]; // First vector of the side
-		var v2 = p1.vertices[(n + 1) % p1.vertices.length]; // Second vector of the side ("%" cycle through the polygon until first vector)
-		
-		var edge = v2.substract(v1);
-		var axis = edge.perp(); // Find the side's normal...
-		axis = axis.normalize(); // ...and make it a unit vector
-		
-		var p1Interval = this._PolyInterval(axis, p1);
-		var p2Interval = this._PolyInterval(axis, p2);
-		
-		if(!this._PolyToPolyOverlap(p1Interval, p2Interval)) { // If there is no overlap
-			return false; // No overlap (exit loop)
-		} else { // ... but if there IS an overlap:
-			var overlapOfThisAxis = this._PolyToPolyOverlap(p1Interval, p2Interval);
-			
-			// Check for containment
-			/* TODO
-			if(p1.contains(p2) || p2.contains(p1) {
-				var mins = abs(p1Interval.min - p2Interval.max);
-				var max = abs(p1Interval.max - p2Interval.max);
-				
-				// Result needs to be overlap + the amount the poly is actually inside the other poly
-				if(mins < maxs) {
-					overlapOfThisAxis += mins;
-				} else {
-					overlapOfThisAxis += maxs;
-				}
-			}
-			*/
-			
-			// Find the smallest overlap
-			if(overlapOfThisAxis < overlap || overlap === 0) { // If the new overlap is smaller, or it's the first overlap
-				overlap = overlapOfThisAxis; // The smallest overlap found until now
-				smallestOverlapAxis = axis; // Take the current axis as the smallest until a smaller overlap is found
-			}
-		}
-	}
-	
-	for(var n=0; n < p2.vertices.length; n++) { // Test polygon 2 edges
-		var v1 = p2.vertices[n]; // First vector of the side
-		var v2 = p2.vertices[(n + 1) % p2.vertices.length]; // Second vector of the side ("%" cycle through the polygon until first vector)
-		
-		var edge = v2.substract(v1);
-		var axis = edge.perp(); // Find the side's normal...
-		axis = axis.normalize(); // ...and make it a unit vector
-		
-		var p1Interval = this._PolyInterval(axis, p1);
-		var p2Interval = this._PolyInterval(axis, p2);
-		
-		if(!this._PolyToPolyOverlap(p2Interval, p1Interval)) { // If there is no overlap
-			return false; // No overlap (exit loop)
-		} else { // ... but if there IS an overlap:
-			var overlapOfThisAxis = this._PolyToPolyOverlap(p2Interval, p1Interval);
-			
-			if(overlapOfThisAxis < overlap || overlap === 0) { // If the new overlap is smaller, or it's the first overlap
-				overlap = overlapOfThisAxis; // The smallest overlap found until now
-				smallestOverlapAxis = axis; // Take the current axis until a smaller overlap is found
-			}
-		}
-	}
-	
-	// TODO: MAKE SURE RESULTING vector IS CORRECT IN ALL CASES
-	
-	// If we haven't exited by now there is an overlap on each side of each polygon and we have a collision, return resulting vector
-	// Resulting vector = MTV = Minimum Translation vector
-	// The coords are the axis (normalised direction) * the overlap (size of overlap)
-	
-	
-	// Create the resulting vector (Minimum Translation Vector)
-	var MTV = new TOOLBOX.Vector(smallestOverlapAxis.x * overlap, smallestOverlapAxis.y * overlap);
-	
-	// Return the resulting vector, always from first to next polygon (so check with direction of the vector from centerA to centerB)
-	var ca = p1.center;
-	var cb = p2.center;
-	var cacb = ca.substract(cb);
-	if(MTV.dotProduct(cacb) < 0) {
-		MTV.negate();
-	}
-	
-	return MTV;
-}
-
-// Check if 2 projected polygons overlap on the axis
-// @param p1 The first polygon
-// @param p2 The second polygon
-// @return A statement to be evaluated
-SCollisionDetection._PolyToPolyOverlap = function(p1Interval, p2Interval) {
-	if(p1Interval.min <= p2Interval.max && p2Interval.min <= p1Interval.max) { // Check if there is an overlap
-		return this._intervalDistance(p1Interval.min, p1Interval.max, p2Interval.min, p2Interval.max);
-	} else {
-		return false;
-	}
-}
-
-// Projects all vertexes of a polygon on an axis and calculates a scalar, then returns the min and max values
-// @param axis The axis to project the vertexes on
-// @param p The polygon to be projected
-// @return A container with the min and max value
-SCollisionDetection._PolyInterval = function(axis, p) {
-	var min = max = axis.dotProduct(p.vertices[0]); // A scalar to express the projection's distance, start with first point
-	for(var n = 1, point; point = p.vertices[n]; n++) { // Project all points (vectors) of the first polygon (0th was done already)
-		var scalar = axis.dotProduct(point); // The scalar that expresses this projection's distance
-		if(scalar > max) { max = scalar; } // If new scalar is a max, update max
-		if(scalar < min) { min = scalar; } // If new scalar is a min, update min
-	}
-	
-	return {'min' : min, 'max' : max};
-}
-
-// Calculate the distance between the boundaries of an interval
-SCollisionDetection._intervalDistance = function(minA, maxA, minB, maxB) {
-	if (minA < minB) {
-		return maxA - minB;
-	} else {
-		return maxB - minA;
-	}
 }
 
 // System Collision Resolver
