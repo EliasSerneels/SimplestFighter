@@ -23,7 +23,7 @@ function init() {
 	GAME.EntityManager.registerComponentType('CVelocity');
 	GAME.EntityManager.registerComponentType('CRender');
 	GAME.EntityManager.registerComponentType('CAccel');
-	GAME.EntityManager.registerComponentType('CSquare');
+	GAME.EntityManager.registerComponentType('CRectangle');
 	GAME.EntityManager.registerComponentType('CShape');
 	GAME.EntityManager.registerComponentType('CCollision');
 	
@@ -32,44 +32,27 @@ function init() {
 	
 	// Set entity manager for Systems
 	SMove.setEntityManager(GAME.EntityManager);
-	SAccelChar.setEntityManager(GAME.EntityManager);
 	SRender.setEntityManager(GAME.EntityManager);
-	SCollisionDetection.setEntityManager(GAME.EntityManager);
-	SCollisionResolver.setEntityManager(GAME.EntityManager);
 
 	// Create player 1
-	var polygon = new TOOLBOX.Polygon();
-	polygon.addVertex(0, 0);
-	polygon.addVertex(50, 0);
-	polygon.addVertex(50, 75);
-	polygon.addVertex(0, 75);
-	polygon.setCenter(25, 37.5);
-	
 	var e = GAME.EntityManager.create();
 	GAME.EntityManager.addComponent(e, new CPos(100, 100))
-	GAME.EntityManager.addComponent(e, new CVelocity(0, 0));
-	GAME.EntityManager.addComponent(e, new CAccel(60));
-	GAME.EntityManager.addComponent(e, new CRender(0));
-	GAME.EntityManager.addComponent(e, new CShape('poly', polygon));
-	GAME.EntityManager.addToGroup(e, 'COLLISION_BODIES_PLAYERS');
-	GAME.EntityManager.addTag(e, 'PLAYER1');
+		.addComponent(e, new CRectangle(50, 75))
+		.addComponent(e, new CVelocity(0, 0))
+		.addComponent(e, new CAccel(60))
+		.addComponent(e, new CRender(0))
+		.addToGroup(e, 'COLLISION_BODIES_PLAYERS')
+		.addTag(e, 'PLAYER1');
 	
 	// Create player 2
-	var polygon = new TOOLBOX.Polygon();
-	polygon.addVertex(0, 0);
-	polygon.addVertex(50, 0);
-	polygon.addVertex(50, 75);
-	polygon.addVertex(0, 75);
-	polygon.setCenter(25, 37.5);
-	
 	var e = GAME.EntityManager.create();
 	GAME.EntityManager.addComponent(e, new CPos(350, 100))
-	GAME.EntityManager.addComponent(e, new CVelocity(0, 0));
-	GAME.EntityManager.addComponent(e, new CAccel(60));
-	GAME.EntityManager.addComponent(e, new CRender(1));
-	GAME.EntityManager.addComponent(e, new CShape('poly', polygon));
-	GAME.EntityManager.addToGroup(e, 'COLLISION_BODIES_PLAYERS');
-	GAME.EntityManager.addTag(e, 'PLAYER2');
+		.addComponent(e, new CRectangle(50, 75))
+		.addComponent(e, new CVelocity(0, 0))
+		.addComponent(e, new CAccel(60))
+		.addComponent(e, new CRender(1))
+		.addToGroup(e, 'COLLISION_BODIES_PLAYERS')
+		.addTag(e, 'PLAYER2');
 	
 	// Start the tools
 	GAME.EventHandler.startEventHandler();

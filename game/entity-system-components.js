@@ -53,12 +53,12 @@ CRender = function(imgId) {
 }
 CRender.prototype = { type : 'CRender' };
 
-// Square Component
-CSquare = function(width, height) {
+// Rectangle Component
+CRectangle = function(width, height) {
 	this.width = width;
 	this.height = height;
 }
-CSquare.prototype = { type : 'CSquare' };
+CRectangle.prototype = { type : 'CRectangle' };
 
 // Shape Component (mainly for collision detection
 // @param shapeType "poly" or "circle"
@@ -98,7 +98,9 @@ SBase.prototype = {
 
 var SControlChar = new SBase();
 SControlChar.process = function(player) {
+	cPos = this.EntityManager.getComponent(player, 'CPos');
 	
+	if(cPos.vector.y + 0) {}
 }
 
 // Move System
