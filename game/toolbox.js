@@ -348,10 +348,11 @@ TOOLBOX.StreamProviders.File = function(_baseDir) {
 	this._baseDir = _baseDir; // baseDir to find assets
 	
 	this.fs = require('fs'); // Load filesystem module
+	this.path = require('path'); // Load path module
 };
 TOOLBOX.StreamProviders.File.prototype = {
 	getStream : function(type, name, callback) {
-		this.fs.readFile(this._baseDir + '/' + type + '/' + name, function(err, logData) {
+		this.fs.readFile(this.path.resolve(this._baseDir, type, name), function(err, logData) {
 			if (err) throw err;
 			callback(logData); // Return logData (= Buffer object)
 		}); // Find file in subdirectory of type in baseDir

@@ -18,7 +18,7 @@ function init() {
 	GAME.AssetManager.load();
 	
 	// Asset management
-	GAME.FileStreamProvider = new TOOLBOX.StreamProviders.File("D:/Game development/javascript/node-webkit/prototypev2/assets");
+	GAME.FileStreamProvider = new TOOLBOX.StreamProviders.File("assets");	
 	GAME.AssetLoader = new TOOLBOX.AssetLoader(GAME.FileStreamProvider);
 	GAME.AssetLoader.registerType("AnimationXML", new TOOLBOX.AssetLoaders.AnimationXML());
 	GAME.AssetCache = new TOOLBOX.AssetCache(GAME.AssetLoader);
