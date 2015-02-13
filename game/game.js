@@ -46,7 +46,7 @@ function init() {
 	polygon.setCenter(25, 37.5);
 	
 	var e = GAME.EntityManager.create();
-	GAME.EntityManager.addComponent(e, new CPos(100, 300))
+	GAME.EntityManager.addComponent(e, new CPos(100, 100))
 	GAME.EntityManager.addComponent(e, new CVelocity(0, 0));
 	GAME.EntityManager.addComponent(e, new CAccel(60));
 	GAME.EntityManager.addComponent(e, new CRender(0));
@@ -63,7 +63,7 @@ function init() {
 	polygon.setCenter(25, 37.5);
 	
 	var e = GAME.EntityManager.create();
-	GAME.EntityManager.addComponent(e, new CPos(100, 300))
+	GAME.EntityManager.addComponent(e, new CPos(350, 100))
 	GAME.EntityManager.addComponent(e, new CVelocity(0, 0));
 	GAME.EntityManager.addComponent(e, new CAccel(60));
 	GAME.EntityManager.addComponent(e, new CRender(1));

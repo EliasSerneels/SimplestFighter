@@ -41,6 +41,12 @@ CAccel = function(accel) {
 }
 CAccel.prototype = { type : 'CAccel' };
 
+// Moveable Component
+CForce = function(dx, dy) {
+	this.vector = new TOOLBOX.Vector(dx, dy);
+}
+CForce.prototype = { type : 'CForce' };
+
 // Renderable Component
 CRender = function(imgId) {
 	this.imgId = imgId;
@@ -89,6 +95,11 @@ SBase.prototype = {
 
 /* Sub Systems */
 // Will be created on top of BaseSystem to implement specific logic on a set of components and overwrites "process" (no data in objects, please)
+
+var SControlChar = new SBase();
+SControlChar.process = function(player) {
+	
+}
 
 // Move System
 var SMove = new SBase();

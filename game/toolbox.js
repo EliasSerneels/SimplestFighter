@@ -669,6 +669,14 @@ TOOLBOX.Circle = function(x, y, r) {
 	this.r = r;
 }
 
+// Rectangle Class
+TOOLBOX.Rectangle = function(x, y, width, height) {
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+}
+
 // Polygon Class
 TOOLBOX.Polygon = function() {
 	this.center = null;
@@ -690,6 +698,22 @@ TOOLBOX.Polygon.prototype = {
 		this.center = new TOOLBOX.Vector(x, y);
 	},
 };
+
+// 2D Collision Detection
+TOOLBOX.CollisionDetection2D = {
+	
+	/* Public */
+	
+	// Axis-Aligned Bounding Box
+	// Checks if 2 axis-aligned rectangles are overlapping
+	// TODO: Return resulting vector
+	AABB : function(r1, r2) {
+		if(r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.height + r1.y > r2.y) {
+			return true;
+		}
+		return false;
+	}
+}
 
 // Separating Axis Theorem
 
@@ -881,7 +905,7 @@ TOOLBOX.SAT = {
 		}
 	},
 }
-// lol
+
 
 
 
