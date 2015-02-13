@@ -97,10 +97,36 @@ SBase.prototype = {
 // Will be created on top of BaseSystem to implement specific logic on a set of components and overwrites "process" (no data in objects, please)
 
 var SControlChar = new SBase();
-SControlChar.process = function(player) {
-	cPos = this.EntityManager.getComponent(player, 'CPos');
+SControlChar.process = function(toolboxEventHandler, dt, player) {
+	var cPos = this.EntityManager.getComponent(player, 'CPos');
+	var cRectangle = this.EntityManager.getComponent(player, 'CRectangle');
 	
-	if(cPos.vector.y + 0) {}
+	var worldHeight = 500;
+	var gravitySpeed = 40;
+	
+	if(cPos.vector.y + cRectangle.height < worldHeight) {
+		cPos.vector.y += gravitySpeed * dt;
+	} else {
+		cPos.vector.y = worldHeight - cRectangle.height;
+	}
+	
+	var moveSpeed = 60;
+	
+	var keysActive = toolboxEventHandler.getKeysActive();
+	
+	var player1 = this.EntityManager.getByTag('PLAYER1');
+	var cPosPlayer1 = this.EntityManager.getComponent(player1, 'CPos');
+	
+	if(keysActive[TOOLBOX.KeyCode.KEY_D]) { cPosPlayer1.vector.x += moveSpeed * dt; }
+	if(keysActive[TOOLBOX.KeyCode.KEY_A]) { cPosPlayer1.vector.x += - moveSpeed * dt; }
+	if(keysActive[TOOLBOX.KeyCode.KEY_W]) { cPosPlayer1.vector.y += - moveSpeed * dt; }
+	
+	var player2 = this.EntityManager.getByTag('PLAYER2');
+	var cPosPlayer2 = this.EntityManager.getComponent(player2, 'CPos');
+
+	if(keysActive[TOOLBOX.KeyCode.RIGHT_ARROW]) { cPosPlayer2.vector.x += moveSpeed * dt; }
+	if(keysActive[TOOLBOX.KeyCode.LEFT_ARROW]) { cPosPlayer2.vector.x += - moveSpeed * dt; }
+	if(keysActive[TOOLBOX.KeyCode.UP_ARROW]) { cPosPlayer2.vector.y += - moveSpeed * dt; }
 }
 
 // Move System

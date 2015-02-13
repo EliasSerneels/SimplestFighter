@@ -11,7 +11,7 @@ function init() {
 	var srcArray = ['rectangle1.png', 'rectangle2.png'];
 	
 	// Create the tools
-	GAME.Engine = new TOOLBOX.Engine(30, updateGame);
+	GAME.Engine = new TOOLBOX.Engine(60, updateGame);
 	GAME.Renderer = new TOOLBOX.RenderContextCanvas('level2');
 	GAME.EventHandler = new TOOLBOX.EventHandler(GAME.Renderer);
 	GAME.AssetManager = new TOOLBOX.AssetManager(path, srcArray);
@@ -33,6 +33,7 @@ function init() {
 	// Set entity manager for Systems
 	SMove.setEntityManager(GAME.EntityManager);
 	SRender.setEntityManager(GAME.EntityManager);
+	SControlChar.setEntityManager(GAME.EntityManager);
 
 	// Create player 1
 	var e = GAME.EntityManager.create();
@@ -64,6 +65,10 @@ function updateGame() {
 	// SAccelChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime());
 	// SMove.process();
 	// SCollisionDetection.process(GAME.EntityManager.getGroup('COLLISION_BODIES'));
+	
+	SControlChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime(), GAME.EntityManager.getByTag('PLAYER1'));
+	SControlChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime(), GAME.EntityManager.getByTag('PLAYER2'));
+	
 	SRender.process(GAME.Renderer, GAME.AssetManager);
 }
 
