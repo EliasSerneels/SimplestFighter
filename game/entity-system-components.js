@@ -77,6 +77,12 @@ CCollision = function(thisEntity, collidingEntity, resultingVector) {
 }
 CCollision.prototype= {type : 'CCollision' }
 
+// Jump Component
+CJump = function(time, speed) {
+	this.time;
+	this.speed;
+}
+
 /* System (a generic class that always takes a list of components, with their entities as index) */
 // e.g. listOfSomeType = { 0 : obj, 5 : obj, 8 : obj } is returned by EntityManager.getAllComponentsOfType('SomeType');
 
@@ -111,22 +117,42 @@ SControlChar.process = function(toolboxEventHandler, dt, player) {
 	}
 	
 	var moveSpeed = 60;
+	var jumpSpeed = 100;
 	
 	var keysActive = toolboxEventHandler.getKeysActive();
 	
 	var player1 = this.EntityManager.getByTag('PLAYER1');
 	var cPosPlayer1 = this.EntityManager.getComponent(player1, 'CPos');
 	
+	if(keysActive[TOOLBOX.KeyCode.KEY_W]) { GAME.EntityManager.addComponent(e, new CJump(2000, jumpSpeed)) } // go to jump state
+	
 	if(keysActive[TOOLBOX.KeyCode.KEY_D]) { cPosPlayer1.vector.x += moveSpeed * dt; }
 	if(keysActive[TOOLBOX.KeyCode.KEY_A]) { cPosPlayer1.vector.x += - moveSpeed * dt; }
-	if(keysActive[TOOLBOX.KeyCode.KEY_W]) { cPosPlayer1.vector.y += - moveSpeed * dt; }
+	
 	
 	var player2 = this.EntityManager.getByTag('PLAYER2');
 	var cPosPlayer2 = this.EntityManager.getComponent(player2, 'CPos');
 
+	if(keysActive[TOOLBOX.KeyCode.UP_ARROW]) { cPosPlayer2.vector.y += - moveSpeed * dt; } // go to jump state
 	if(keysActive[TOOLBOX.KeyCode.RIGHT_ARROW]) { cPosPlayer2.vector.x += moveSpeed * dt; }
 	if(keysActive[TOOLBOX.KeyCode.LEFT_ARROW]) { cPosPlayer2.vector.x += - moveSpeed * dt; }
-	if(keysActive[TOOLBOX.KeyCode.UP_ARROW]) { cPosPlayer2.vector.y += - moveSpeed * dt; }
+}
+
+var SJump = new SBase();
+SJump.process = function(dt) {
+	var jumpComponents = this.EntityManager.getAllComponentsOfType('CJump');
+	for(entity in jumpComponents) {
+		cJump = jumpComponents[entity];
+		cPos = this.EntityManager.getComponent(entity, 'CPos');
+		
+		if(cJump.time - dt <= 0) {
+			cPos.vector.x += cJump.speed * (cJump.time - dt);
+			this.EntityManager.removeComponent(entity, 'CJump');
+		} else {
+			cPos.vector.x += cJump.speed * dt;
+			cJump.time - dt;
+		}
+	}
 }
 
 // Move System

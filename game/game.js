@@ -26,6 +26,7 @@ function init() {
 	GAME.EntityManager.registerComponentType('CRectangle');
 	GAME.EntityManager.registerComponentType('CShape');
 	GAME.EntityManager.registerComponentType('CCollision');
+	GAME.EntityManager.registerComponentType('CJump');
 	
 	// Create a group for basic collisions
 	GAME.EntityManager.createGroup('COLLISION_BODIES_PLAYERS');

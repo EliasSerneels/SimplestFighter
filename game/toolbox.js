@@ -583,6 +583,12 @@ TOOLBOX.EntityManager = function() {
 		return this; // Enable cascading
 	}
 	
+	// Remove a component from an entity
+	this.removeComponent = function(entity, component) {
+		delete map[component.type][entity];
+		return this; // Enable cascading
+	}
+	
 	// Get a component from an entity
 	this.getComponent = function(entity, componentType) {
 		return map[componentType][entity];
@@ -810,17 +816,17 @@ TOOLBOX.CollisionDetection2D = {
 	// Checks if 2 axis-aligned rectangles are overlapping
 	// TODO: Return resulting vector
 	AABBCollision : function(r1, r2) {
-			return (r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.height + r1.y > r2.y);
-	}
+		return (r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.height + r1.y > r2.y);
+	},
 	
 	AABBContainment : function(r1, r2){
-		if(r1.x+r1.width>=r2.width{
-			r1.x=r1.x-r1.width;
+		if(r1.x + r1.width >= r2.width) {
+			r1.x = r1.x - r1.width;
 		}
-		if(r1.y+r1.height>=r2.width){
-			r1.y=r1.y-r1.height;
+		if(r1.y + r1.height >= r2.width) {
+			r1.y = r1.y - r1.height;
 		}
-	}
+	},
 }
 
 // Separating Axis Theorem
@@ -961,7 +967,8 @@ TOOLBOX.SAT = {
 	// @return false if they don't overlap, a resulting vector if they do
 	circleToCircle : function(c1, c2)  {
 		var totalRadius = c1.r + c2.r; // Calculate their combined radii
-		var centerDistance = Math.sqrt((c2.x - c1.x) * (c2.x - c1.x) + (c2.y - c1.y) * (c2.y - c1.y)); // Calculate the distance between their centers: http://en.wikipedia.org/wiki/Cartesian_coordinates#Distance_between_two_points
+		// Calculate the distance between their centers: http://en.wikipedia.org/wiki/Cartesian_coordinates#Distance_between_two_points
+		var centerDistance = Math.sqrt((c2.x - c1.x) * (c2.x - c1.x) + (c2.y - c1.y) * (c2.y - c1.y));
 		if(centerDistance < totalRadius) { // Check for overlap
 			var difference = totalRadius - centerDistance; // Find out how much they overlap
 			return new TOOLBOX.Vector((c2.x - c1.x) * difference, (c2.y - c1.y) * difference); // Return the resulting vector
@@ -1030,8 +1037,5 @@ TOOLBOX.SAT = {
 		}
 	},
 }
-
-
-
 
 
