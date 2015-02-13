@@ -1,0 +1,14 @@
+<stateMachine id='HUMAN'>
+	<state id='IDLE'>
+		<event trigger='LEFT_DOWN' goto='MOVING_LEFT' />
+		<event trigger='RIGHT_DOWN' goto='MOVING_RIGHT' />
+	</state>
+	<state id='MOVING_LEFT'>
+		<event trigger='LEFT_UP' goto='IDLE' />
+		<event trigger='RIGHT_DOWN' goto='MOVING_RIGHT' />
+	</state>
+	<state id='MOVING_RIGHT'>
+		<event trigger='RIGHT_UP' goto='IDLE' />
+		<event trigger='LEFT_DOWN' goto='MOVING_LEFT' />
+	</state>
+</stateMachine>

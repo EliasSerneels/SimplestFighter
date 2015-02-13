@@ -1,0 +1,5 @@
+<entity name="wizard">
+    <stateMachineId></stateMachineId>
+	<state id="IDLE" animation="WIZARD_IDLE" />
+    <state id="MOVING_LEFT" animation="WIZARD_WALK_LEFT" />
+</entity>

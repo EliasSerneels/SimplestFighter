@@ -1,0 +1,20 @@
+<animation>
+	<id>WIZARD_WALK_LEFT</id>
+	<imageId>WIZARD_WALKING</imageId>
+    <fps>50</fps>
+    <replay>true</replay>
+    <frames>
+        <rectangle>
+            <x>0</x>
+            <y>0</y>
+            <width>45</width>
+            <height>45</height>
+        </rectangle>
+        <rectangle>
+            <x>45</x>
+            <y>0</y>
+            <width>45</width>
+            <height>45</height>
+        </rectangle>
+    </frames>
+</animation>
