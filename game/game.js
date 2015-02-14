@@ -35,6 +35,9 @@ function init() {
 	SMove.setEntityManager(GAME.EntityManager);
 	SRender.setEntityManager(GAME.EntityManager);
 	SControlChar.setEntityManager(GAME.EntityManager);
+	SGravity.setEntityManager(GAME.EntityManager);
+	STouchGround.setEntityManager(GAME.EntityManager);
+	SCoolDown.setEntityManager(GAME.EntityManager);
 
 	// Create player 1
 	var e = GAME.EntityManager.create();
@@ -43,6 +46,7 @@ function init() {
 		.addComponent(e, new CVelocity(0, 0))
 		.addComponent(e, new CAccel(60))
 		.addComponent(e, new CRender(0))
+		.addComponent(e, new CJump(0))
 		.addToGroup(e, 'COLLISION_BODIES_PLAYERS')
 		.addTag(e, 'PLAYER1');
 	
@@ -53,6 +57,7 @@ function init() {
 		.addComponent(e, new CVelocity(0, 0))
 		.addComponent(e, new CAccel(60))
 		.addComponent(e, new CRender(1))
+		.addComponent(e, new CJump(0))
 		.addToGroup(e, 'COLLISION_BODIES_PLAYERS')
 		.addTag(e, 'PLAYER2');
 	
@@ -69,6 +74,10 @@ function updateGame() {
 	
 	SControlChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime(), GAME.EntityManager.getByTag('PLAYER1'));
 	SControlChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime(), GAME.EntityManager.getByTag('PLAYER2'));
+	SGravity.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 2);
+	SMove.process(GAME.Engine.getDeltaTime());
+	STouchGround.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
+	SCoolDown.process(GAME.Engine.getDeltaTime());
 	
 	SRender.process(GAME.Renderer, GAME.AssetManager);
 }

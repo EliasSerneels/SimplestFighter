@@ -75,13 +75,13 @@ CCollision = function(thisEntity, collidingEntity, resultingVector) {
 	this.collidingEntity = collidingEntity;
 	this.resultingVector = resultingVector;
 }
-CCollision.prototype= {type : 'CCollision' }
+CCollision.prototype = {type : 'CCollision' }
 
 // Jump Component
-CJump = function(time, speed) {
-	this.time;
-	this.speed;
+CJump = function(coolDownTime) {
+	this.coolDownTime = coolDownTime;
 }
+CJump.prototype = {type : 'CJump' }
 
 /* System (a generic class that always takes a list of components, with their entities as index) */
 // e.g. listOfSomeType = { 0 : obj, 5 : obj, 8 : obj } is returned by EntityManager.getAllComponentsOfType('SomeType');
@@ -107,24 +107,22 @@ SControlChar.process = function(toolboxEventHandler, dt, player) {
 	var cPos = this.EntityManager.getComponent(player, 'CPos');
 	var cRectangle = this.EntityManager.getComponent(player, 'CRectangle');
 	
-	var worldHeight = 500;
-	var gravitySpeed = 40;
-	
-	if(cPos.vector.y + cRectangle.height < worldHeight) {
-		cPos.vector.y += gravitySpeed * dt;
-	} else {
-		cPos.vector.y = worldHeight - cRectangle.height;
-	}
-	
 	var moveSpeed = 60;
-	var jumpSpeed = 100;
+	var jumpSpeed = 150;
+	var jumpCooldown = 0.8;
 	
 	var keysActive = toolboxEventHandler.getKeysActive();
 	
 	var player1 = this.EntityManager.getByTag('PLAYER1');
 	var cPosPlayer1 = this.EntityManager.getComponent(player1, 'CPos');
-	
-	if(keysActive[TOOLBOX.KeyCode.KEY_W]) { GAME.EntityManager.addComponent(e, new CJump(2000, jumpSpeed)) } // go to jump state
+	var cVelocityPlayer1 = this.EntityManager.getComponent(player1, 'CVelocity');
+	var cJumpPlayer1 = this.EntityManager.getComponent(player1, 'CJump');
+		
+	if(keysActive[TOOLBOX.KeyCode.KEY_W] && cJumpPlayer1.coolDownTime <= 0) {
+		cVelocityPlayer1.vector.y = 0; // Reset velocity
+		cVelocityPlayer1.vector.y -= jumpSpeed; // Accelerate
+		cJumpPlayer1.coolDownTime = jumpCooldown;
+	}
 	
 	if(keysActive[TOOLBOX.KeyCode.KEY_D]) { cPosPlayer1.vector.x += moveSpeed * dt; }
 	if(keysActive[TOOLBOX.KeyCode.KEY_A]) { cPosPlayer1.vector.x += - moveSpeed * dt; }
@@ -132,32 +130,44 @@ SControlChar.process = function(toolboxEventHandler, dt, player) {
 	
 	var player2 = this.EntityManager.getByTag('PLAYER2');
 	var cPosPlayer2 = this.EntityManager.getComponent(player2, 'CPos');
-
+	var cVelocityPlayer2 = this.EntityManager.getComponent(player2, 'CVelocity');
+	var cJumpPlayer2 = this.EntityManager.getComponent(player2, 'CJump');
+	
+	if(keysActive[TOOLBOX.KeyCode.UP_ARROW] && cJumpPlayer2.coolDownTime <= 0) {
+		cVelocityPlayer2.vector.y = 0; // Reset velocity
+		cVelocityPlayer2.vector.y -= jumpSpeed; // Accelerate
+		cJumpPlayer2.coolDownTime = jumpCooldown;
+	}
+	
 	if(keysActive[TOOLBOX.KeyCode.UP_ARROW]) { cPosPlayer2.vector.y += - moveSpeed * dt; } // go to jump state
 	if(keysActive[TOOLBOX.KeyCode.RIGHT_ARROW]) { cPosPlayer2.vector.x += moveSpeed * dt; }
 	if(keysActive[TOOLBOX.KeyCode.LEFT_ARROW]) { cPosPlayer2.vector.x += - moveSpeed * dt; }
 }
 
-var SJump = new SBase();
-SJump.process = function(dt) {
-	var jumpComponents = this.EntityManager.getAllComponentsOfType('CJump');
-	for(entity in jumpComponents) {
-		cJump = jumpComponents[entity];
-		cPos = this.EntityManager.getComponent(entity, 'CPos');
+var SCoolDown = new SBase();
+SCoolDown.process = function(dt) {
+	var componentsJump = this.EntityManager.getAllComponentsOfType('CJump'); // Process for all entities with component CJump
+	for(entity in componentsJump) {
+		cJump = componentsJump[entity];
+		if(cJump.coolDownTime > 0) { cJump.coolDownTime -= dt; }
+	}
+}
+
+var STouchGround = new SBase();
+STouchGround.process = function(players, worldHeight) {
+	for(entity in players) {
+		var cPos = this.EntityManager.getComponent(entity, 'CPos');
+		var cRectangle = this.EntityManager.getComponent(entity, 'CRectangle');
 		
-		if(cJump.time - dt <= 0) {
-			cPos.vector.x += cJump.speed * (cJump.time - dt);
-			this.EntityManager.removeComponent(entity, 'CJump');
-		} else {
-			cPos.vector.x += cJump.speed * dt;
-			cJump.time - dt;
+		if(cPos.vector.y + cRectangle.height > worldHeight) {
+			cPos.vector.y = worldHeight - cRectangle.height;
 		}
 	}
 }
 
 // Move System
 var SMove = new SBase();
-SMove.process = function() {
+SMove.process = function(dt) {
 	var componentsVelocity = this.EntityManager.getAllComponentsOfType('CVelocity'); // Process for all entities with component CVelocity
 	for(entity in componentsVelocity) {
 		// Get each component needed of this entity
@@ -165,30 +175,18 @@ SMove.process = function() {
 		componentPos = this.EntityManager.getComponent(entity, 'CPos');
 		
 		// Perform the logic / update the data
-		componentPos.vector.x = componentPos.vector.x + componentVelocity.vector.x;
-		componentPos.vector.y = componentPos.vector.y + componentVelocity.vector.y;
+		componentPos.vector.x = componentPos.vector.x + (componentVelocity.vector.x * dt);
+		componentPos.vector.y = componentPos.vector.y + (componentVelocity.vector.y * dt);
 	}
 }
 
-// Move Char (by arrow keys) System
-var SAccelChar = new SBase();
-SAccelChar.process = function(toolboxEventHandler, dt) {
-	var componentsAccelChar = this.EntityManager.getAllComponentsOfType('CAccel'); // Process for all entities with component CMoveChar
-	
-	for(entity in componentsAccelChar) {
-		// Get each component needed of this entity
-		componentAccelChar = componentsAccelChar[entity];
-		componentMove = this.EntityManager.getComponent(entity, 'CVelocity');
-		
-		// Perform the logic / update the data
-		componentMove.vector.x = 0;
-		componentMove.vector.y = 0;
-		
-		var keysActive = toolboxEventHandler.getKeysActive();
-		if(keysActive['39']) { componentMove.vector.x = componentAccelChar.accel * dt; }
-		if(keysActive['37']) { componentMove.vector.x = - componentAccelChar.accel * dt; }
-		if(keysActive['38']) { componentMove.vector.y = - componentAccelChar.accel * dt; }
-		if(keysActive['40']) { componentMove.vector.y = componentAccelChar.accel * dt; }
+// Gravitational System
+var SGravity = new SBase();
+SGravity.process = function(gravitationalBodies, gravitationalStrength) {
+	for(entity in gravitationalBodies) {
+		// Accelerate
+		cVelocity = this.EntityManager.getComponent(entity, 'CVelocity');
+		cVelocity.vector.y += gravitationalStrength;
 	}
 }
 

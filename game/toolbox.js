@@ -584,8 +584,8 @@ TOOLBOX.EntityManager = function() {
 	}
 	
 	// Remove a component from an entity
-	this.removeComponent = function(entity, component) {
-		delete map[component.type][entity];
+	this.removeComponent = function(entity, componentType) {
+		delete map[componentType][entity];
 		return this; // Enable cascading
 	}
 	
