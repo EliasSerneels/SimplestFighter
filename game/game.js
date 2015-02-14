@@ -79,7 +79,7 @@ function updateGame() {
 	SGravity.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 3);
 	SMove.process(GAME.Engine.getDeltaTime());
 	STouchGround.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
-	SDash.process(GAME.Engine.getDeltaTime(), 500);
+	SDash.process(GAME.Engine.getDeltaTime(), 100, 1200);
 	SCoolDown.process(GAME.Engine.getDeltaTime());
 	
 	SRender.process(GAME.Renderer, GAME.AssetManager);
