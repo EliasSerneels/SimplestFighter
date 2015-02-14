@@ -304,6 +304,10 @@ TOOLBOX.EventHandler = function(_context) {
 		'67' : false, // c
 		'86' : false  // v
 	};
+	
+	// Buffer functionality
+	this._buffer = []; // Stores events, so both keycode and timestamp are included
+	this._bufferLength = 9;
 }
 TOOLBOX.EventHandler.prototype = {
 	
@@ -350,6 +354,12 @@ TOOLBOX.EventHandler.prototype = {
 		
 		window.addEventListener('keyup', keyupHandler = function(e) { // if KEYUP set to 'non-active'
 			my._keysActive[e.keyCode] = false;
+				
+			// Buffer stuff
+			for(i = my._bufferLength; i > 0; --i) { // Iterate backwards and only go to 1
+				my._buffer[i] = my._buffer[i-1]; // Shift the buffer values
+			}
+			my._buffer[0] = e; // Fill up the 0-spot with the new guy on the block
 		}, false);
 	},
 	
@@ -358,6 +368,10 @@ TOOLBOX.EventHandler.prototype = {
 		this._context.getScreen().removeEventListener('mouseup', mouseupHandler, false);
 		this._context.getScreen().removeEventListener('keydown', keydownHandler, false);
 		this._context.getScreen().removeEventListener('keyup', keyupHandler, false);
+	},
+	
+	getBuffer : function() {
+		return this._buffer;
 	},
 	
 	/* Private */

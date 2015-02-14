@@ -11,7 +11,7 @@ function init() {
 	var srcArray = ['rectangle1.png', 'rectangle2.png'];
 	
 	// Create the tools
-	GAME.Engine = new TOOLBOX.Engine(60, updateGame);
+	GAME.Engine = new TOOLBOX.Engine(120, updateGame);
 	GAME.Renderer = new TOOLBOX.RenderContextCanvas('level2');
 	GAME.EventHandler = new TOOLBOX.EventHandler(GAME.Renderer);
 	GAME.AssetManager = new TOOLBOX.AssetManager(path, srcArray);
@@ -26,7 +26,8 @@ function init() {
 	GAME.EntityManager.registerComponentType('CRectangle');
 	GAME.EntityManager.registerComponentType('CShape');
 	GAME.EntityManager.registerComponentType('CCollision');
-	GAME.EntityManager.registerComponentType('CJump');
+	GAME.EntityManager.registerComponentType('CCooldown');
+	GAME.EntityManager.registerComponentType('CDash');
 	
 	// Create a group for basic collisions
 	GAME.EntityManager.createGroup('COLLISION_BODIES_PLAYERS');
@@ -38,6 +39,7 @@ function init() {
 	SGravity.setEntityManager(GAME.EntityManager);
 	STouchGround.setEntityManager(GAME.EntityManager);
 	SCoolDown.setEntityManager(GAME.EntityManager);
+	SDash.setEntityManager(GAME.EntityManager);
 
 	// Create player 1
 	var e = GAME.EntityManager.create();
@@ -46,7 +48,7 @@ function init() {
 		.addComponent(e, new CVelocity(0, 0))
 		.addComponent(e, new CAccel(60))
 		.addComponent(e, new CRender(0))
-		.addComponent(e, new CJump(0))
+		.addComponent(e, new CCooldown(0, 0))
 		.addToGroup(e, 'COLLISION_BODIES_PLAYERS')
 		.addTag(e, 'PLAYER1');
 	
@@ -57,7 +59,7 @@ function init() {
 		.addComponent(e, new CVelocity(0, 0))
 		.addComponent(e, new CAccel(60))
 		.addComponent(e, new CRender(1))
-		.addComponent(e, new CJump(0))
+		.addComponent(e, new CCooldown(0, 0))
 		.addToGroup(e, 'COLLISION_BODIES_PLAYERS')
 		.addTag(e, 'PLAYER2');
 	
@@ -74,9 +76,10 @@ function updateGame() {
 	
 	SControlChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime(), GAME.EntityManager.getByTag('PLAYER1'));
 	SControlChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime(), GAME.EntityManager.getByTag('PLAYER2'));
-	SGravity.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 2);
+	SGravity.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 3);
 	SMove.process(GAME.Engine.getDeltaTime());
 	STouchGround.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
+	SDash.process(GAME.Engine.getDeltaTime(), 500);
 	SCoolDown.process(GAME.Engine.getDeltaTime());
 	
 	SRender.process(GAME.Renderer, GAME.AssetManager);
