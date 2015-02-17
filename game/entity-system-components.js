@@ -242,7 +242,23 @@ STouchGround.process = function(players, worldHeight) {
 		}
 	}
 }
-
+var STouchWall = new SBase();
+STouchWall.process = function(players, worldWidth) {
+	for(entity in players) {
+		var cPos = this.EntityManager.getComponent(entity, 'CPos');
+		var cRectangle = this.EntityManager.getComponent(entity, 'CRectangle');
+		
+		if(cPos.vector.x + cRectangle.width > worldWidth) {
+			while(cPos.vector.x > worldWidth){
+				cPos.vector.x = 0 - cRectangle.width;
+			}
+		} else if(cPos.vector.x +cRectangle.width< 0) {
+			while(cPos.vector.x < 0){
+				cPos.vector.x = worldWidth;
+			}
+		}
+	}
+}
 // Dash System
 var SDash = new SBase();
 SDash.process = function(dt, speed) {
