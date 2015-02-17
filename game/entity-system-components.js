@@ -89,6 +89,7 @@ CDash = function(duration, x, y) {
 	this.duration = duration;
 	this.x = x;
 	this.y = y;
+	this.timePassed = 0;
 }
 CDash.prototype = {type : 'CDash' }
 
@@ -117,11 +118,11 @@ SControlChar.process = function(toolboxEventHandler, dt, player) {
 	var cRectangle = this.EntityManager.getComponent(player, 'CRectangle');
 	
 	var moveSpeed = 80;
-	var jumpSpeed = 250;
+	var jumpSpeed = 350;
 	var jumpCooldown = 0.8; // In seconds
-	var dashCooldown = 0.4; // In seconds
+	var dashCooldown = 0.8; // In seconds
 	var doubleTapDelay = 400; // In milliseconds
-	var dashDuration = 0.4; // In seconds
+	var dashDuration = 0.6; // In seconds
 	var timeSinceKeyUp = 400; // In milliseconds
 	
 	var buffer = toolboxEventHandler.getBuffer();
@@ -261,16 +262,16 @@ STouchWall.process = function(players, worldWidth) {
 }
 // Dash System
 var SDash = new SBase();
-SDash.process = function(dt, speed) {
+SDash.process = function(dt, startSpeed, endSpeed) {
 	var componentsDash = this.EntityManager.getAllComponentsOfType('CDash'); // Process for all entities with component CVelocity
 	for(entity in componentsDash) {
 		// Get each component needed of this entity
 		cDash = componentsDash[entity];
 		cPos = this.EntityManager.getComponent(entity, 'CPos');
 		
-		console.log(cDash.duration);
-		console.log(cDash.x);
-		console.log(cDash.y);
+		cDash.timePassed += dt;
+		
+		var speed = startSpeed + (endSpeed - startSpeed) * cDash.timePassed;
 		
 		// Perform the logic / update the data
 		if(cDash.duration - dt <= 0) {
