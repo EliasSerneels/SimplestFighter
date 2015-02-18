@@ -113,7 +113,7 @@ SBase.prototype = {
 // Will be created on top of BaseSystem to implement specific logic on a set of components and overwrites "process" (no data in objects, please)
 
 var SControlChar = new SBase();
-SControlChar.process = function(toolboxEventHandler, dt, player) {
+SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 	var cPos = this.EntityManager.getComponent(player, 'CPos');
 	var cRectangle = this.EntityManager.getComponent(player, 'CRectangle');
 	
@@ -122,8 +122,9 @@ SControlChar.process = function(toolboxEventHandler, dt, player) {
 	var jumpCooldown = 0.8; // In seconds
 	var dashCooldown = 0.8; // In seconds
 	var doubleTapDelay = 400; // In milliseconds
-	var dashDuration = 0.6; // In seconds
+	var dashDuration = 0.4; // In seconds
 	var timeSinceKeyUp = 400; // In milliseconds
+	var groundSpeedBonus = 40;
 	
 	var buffer = toolboxEventHandler.getBuffer();
 	var keysActive = toolboxEventHandler.getKeysActive();
@@ -172,6 +173,11 @@ SControlChar.process = function(toolboxEventHandler, dt, player) {
 		
 		if(keysActive[TOOLBOX.KeyCode.KEY_D]) { cPosPlayer1.vector.x += moveSpeed * dt; }
 		if(keysActive[TOOLBOX.KeyCode.KEY_A]) { cPosPlayer1.vector.x += - moveSpeed * dt; }
+		
+		if(cPosPlayer1.vector.y + cRectangle.height >= worldHeight) { // touching ground?
+			if(keysActive[TOOLBOX.KeyCode.KEY_D]) { cPosPlayer1.vector.x += groundSpeedBonus * dt; }
+			if(keysActive[TOOLBOX.KeyCode.KEY_A]) { cPosPlayer1.vector.x += - groundSpeedBonus * dt; }
+		}
 	}
 	
 	
@@ -219,6 +225,11 @@ SControlChar.process = function(toolboxEventHandler, dt, player) {
 		if(keysActive[TOOLBOX.KeyCode.UP_ARROW]) { cPosPlayer2.vector.y += - moveSpeed * dt; } // go to jump state
 		if(keysActive[TOOLBOX.KeyCode.RIGHT_ARROW]) { cPosPlayer2.vector.x += moveSpeed * dt; }
 		if(keysActive[TOOLBOX.KeyCode.LEFT_ARROW]) { cPosPlayer2.vector.x += - moveSpeed * dt; }
+		
+		if(cPosPlayer2.vector.y + cRectangle.height >= worldHeight) { // touching ground?
+			if(keysActive[TOOLBOX.KeyCode.RIGHT_ARROW]) { cPosPlayer2.vector.x += groundSpeedBonus * dt; }
+			if(keysActive[TOOLBOX.KeyCode.LEFT_ARROW]) { cPosPlayer2.vector.x += - groundSpeedBonus * dt; }
+		}
 	}
 }
 
