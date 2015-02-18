@@ -38,6 +38,7 @@ function init() {
 	SControlChar.setEntityManager(GAME.EntityManager);
 	SGravity.setEntityManager(GAME.EntityManager);
 	STouchGround.setEntityManager(GAME.EntityManager);
+	STouchWall.setEntityManager(GAME.EntityManager);
 	SCoolDown.setEntityManager(GAME.EntityManager);
 	SDash.setEntityManager(GAME.EntityManager);
 
@@ -79,7 +80,12 @@ function updateGame() {
 	SGravity.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 3);
 	SMove.process(GAME.Engine.getDeltaTime());
 	STouchGround.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
+<<<<<<< HEAD
 	SDash.process(GAME.Engine.getDeltaTime(), 100, 2000);
+=======
+	STouchWall.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
+	SDash.process(GAME.Engine.getDeltaTime(), 100, 1200);
+>>>>>>> origin/master
 	SCoolDown.process(GAME.Engine.getDeltaTime());
 	
 	SRender.process(GAME.Renderer, GAME.AssetManager);
