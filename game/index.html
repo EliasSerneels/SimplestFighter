@@ -14,10 +14,22 @@
 	<div id="info">
 		<p>The simplest fighter game around.</p>
 	</div>
-	<div id="canvas_holder">
-		<canvas id="level0" width="800" height="800">Fallback content: Your browser doesn't support the canvas element. Try Google Chrome (IE sux anyway).</canvas>
-		<canvas id="level1" width="800" height="800"></canvas>
-		<canvas id="level2" width="800" height="800"></canvas>
+	<div id="gamescreen">
+		<div><p>Points</p></div>
+		<div id="scores">
+			<div id="Player1Score" class="Player1Counter">0</div>
+			<div id="Player2Score" class="Player2Counter">0</div>
+		</div>
+		<div><p>Invulnerability timers</p></div>
+		<div id="timeInvumerable">
+			<div id="Player1TimeInvunerable" class="Player1Counter">0</div>
+			<div id="Player2TimeInvunerable" class="Player2Counter">0</div>
+		</div>
+		<div id="canvas_holder">
+			<canvas id="level0" width="800" height="800">Fallback content: Your browser doesn't support the canvas element. Try Google Chrome (IE sux anyway).</canvas>
+			<canvas id="level1" width="800" height="800"></canvas>
+			<canvas id="level2" width="800" height="800"></canvas>
+		</div>
 	</div>
 </div>
 </html>

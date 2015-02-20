@@ -1,3 +1,13 @@
 body { font: 16px/10px Verdana; }
-h1 { font: 24px/50px Verdana; }
+h1 { font: 24px/40px Verdana; }
 canvas { border:1px solid #333; position: absolute; }
+
+/* Game screen */
+#gamescreen { width: 800px; }
+
+/* Scores */
+.Player1Counter { color: blue; width: 50%; height: 20px; float: left; }
+.Player2Counter { color: red; width: 50%; height: 20px; float: right; }
+
+
+#canvas_holder { clear: both; }

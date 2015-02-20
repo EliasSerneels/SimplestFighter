@@ -161,6 +161,13 @@ TOOLBOX.RenderContextCanvas.prototype = {
 		this._ctx.drawImage(img, x, y);
 	},
 	
+	renderObjectWithAlpha : function (img, x, y, alpha) {
+		this._ctx.save();
+		this._ctx.globalAlpha = alpha;
+		this._ctx.drawImage(img, x, y);
+		this._ctx.restore();
+	},
+	
 	renderText : function (string, x, y) {
 		this._ctx.fillText(string, x, y);  
 	},
@@ -561,6 +568,7 @@ TOOLBOX.EntityManager = function() {
 	
 	var tags = {};
 	var groups = {};
+	var entityToGroup = {}; // Keep a reference to which groups an entity belongs
 	
 	/* Public */
 	
@@ -578,17 +586,27 @@ TOOLBOX.EntityManager = function() {
 	this.create = function() {
 		var id = getNextAvailableId();
 		entities[id] = true;
+		entityToGroup[id] = []; // Initialise
 		return id; // unique id = entity
 	}
 	
 	// Destroy an entity
 	this.destroy = function(entity) {
+		// Delete components belonging to this entity
 		for(componentType in map) {
 			if(map[componentType][entity]) {
 				delete map[componentType][entity]; // Delete each component of the entity
 			}
 		}
-		entities[entity] = false; // Free up the unique id of the destroyed entity
+		
+		// Delete this entity from groups it belongs to
+		var groupIds = entityToGroup[entity];
+		for(var i=0; i < groupIds.length; i++) {
+			this.removeFromGroup(entity, groupIds[i]);
+		}
+		
+		// Free up the unique id of the destroyed entity
+		entities[entity] = false;
 	}
 	
 	// Add a component to an entity
@@ -675,13 +693,15 @@ TOOLBOX.EntityManager = function() {
 	// Add an entity to a group
 	this.addToGroup = function(entity, group) {
 		groups[group].push(entity);
+		entityToGroup[entity].push(group);
 		return this; // Enable cascading
 	},
 	
 	// Remove an entity from a group
 	this.removeFromGroup = function(entity, group) {
 		for(i=0; i < groups[group].length; i++) {
-			if(i === entity) {
+			if(groups[group][i] === entity) {
+				console.log("check");
 				groups[group].splice(i, 1);
 			}
 		}
@@ -695,7 +715,7 @@ TOOLBOX.EntityManager = function() {
 	/* Private */
 	
 	// Returns the next available id
-	getNextAvailableId = function() {
+	var getNextAvailableId = function() {
 		for(var i=0; i < entities.length; i++) {
 			if(!entities[i]) { // If place is empty, use that one
 				return i;

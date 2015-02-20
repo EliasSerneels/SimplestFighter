@@ -50,6 +50,7 @@ CForce.prototype = { type : 'CForce' };
 // Renderable Component
 CRender = function(imgId) {
 	this.imgId = imgId;
+	this.alpha = 1;
 }
 CRender.prototype = { type : 'CRender' };
 
@@ -75,14 +76,14 @@ CCollision = function(thisEntity, collidingEntity, resultingVector) {
 	this.collidingEntity = collidingEntity;
 	this.resultingVector = resultingVector;
 }
-CCollision.prototype = {type : 'CCollision' }
+CCollision.prototype = { type : 'CCollision' }
 
 // Jump Component
 CCooldown = function(jump, dash) {
 	this.jump = jump;
 	this.dash = dash;
 }
-CCooldown.prototype = {type : 'CCooldown' }
+CCooldown.prototype = { type : 'CCooldown' }
 
 // Dash Component
 CDash = function(duration, x, y) {
@@ -92,6 +93,29 @@ CDash = function(duration, x, y) {
 	this.timePassed = 0;
 }
 CDash.prototype = {type : 'CDash' }
+
+// TouchGround
+CTouchGround = function() {}
+CTouchGround.prototype = { type : 'CTouchGround' }
+
+// Airborn
+CAirborn = function() {}
+CAirborn.prototype = { type : 'CAirborn' }
+
+// Vulnerable
+CVulnerable = function() {}
+CVulnerable.prototype = { type : 'CVulnerable' }
+
+// Invulnerable
+CInvulnerable = function() {}
+CInvulnerable.prototype = { type : 'CInvulnerable' }
+
+// Score Component
+CScore = function(points) {
+	this.points = points;
+	this.timeInvulnerable = 0;
+}
+CScore.prototype = {type : 'CScore' }
 
 /* System (a generic class that always takes a list of components, with their entities as index) */
 // e.g. listOfSomeType = { 0 : obj, 5 : obj, 8 : obj } is returned by EntityManager.getAllComponentsOfType('SomeType');
@@ -112,13 +136,15 @@ SBase.prototype = {
 /* Sub Systems */
 // Will be created on top of BaseSystem to implement specific logic on a set of components and overwrites "process" (no data in objects, please)
 
+var SAirborn
+
 var SControlChar = new SBase();
 SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 	var cPos = this.EntityManager.getComponent(player, 'CPos');
 	var cRectangle = this.EntityManager.getComponent(player, 'CRectangle');
 	
 	var moveSpeed = 80;
-	var jumpSpeed = 350;
+	var jumpSpeed = 250;
 	var jumpCooldown = 0.8; // In seconds
 	var dashCooldown = 0.8; // In seconds
 	var doubleTapDelay = 400; // In milliseconds
@@ -136,7 +162,6 @@ SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 	
 	// Check input buffer for combos
 	var dashPlayer1 = false;
-	console.log(cVelocityPlayer1);
 	if(cVelocityPlayer1 != null && !dashPlayer1) {
 		if(buffer[0] && buffer[1] && cCooldownPlayer1.dash <= 0) {
 			if(buffer[0].keyCode == TOOLBOX.KeyCode.KEY_W && buffer[1].keyCode == TOOLBOX.KeyCode.KEY_W && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
@@ -173,6 +198,25 @@ SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 		
 		if(keysActive[TOOLBOX.KeyCode.KEY_D]) { cPosPlayer1.vector.x += moveSpeed * dt; }
 		if(keysActive[TOOLBOX.KeyCode.KEY_A]) { cPosPlayer1.vector.x += - moveSpeed * dt; }
+		
+		// Go invulnerable
+		if(keysActive[TOOLBOX.KeyCode.KEY_S] && !keysActive[TOOLBOX.KeyCode.KEY_D] && !keysActive[TOOLBOX.KeyCode.KEY_A] && !keysActive[TOOLBOX.KeyCode.KEY_W] && !dashPlayer1) {
+			var cScore = this.EntityManager.getComponent(player1, 'CScore');
+			cScore.timeInvulnerable += dt;
+			var cInvulnerable = this.EntityManager.getComponent(player1, 'CInvulnerable');
+			if(!cInvulnerable) {
+				this.EntityManager.addComponent(player1, new CInvulnerable());
+				var cRender = this.EntityManager.getComponent(player1, 'CRender');
+				cRender.alpha = 0.5;
+			}
+		} else { // Leave inverunablity
+			var cInvulnerable = this.EntityManager.getComponent(player1, 'CInvulnerable');
+			if(cInvulnerable) {
+				this.EntityManager.removeComponent(player1, 'CInvulnerable');
+				var cRender = this.EntityManager.getComponent(player1, 'CRender');
+				cRender.alpha = 1;
+			}
+		}
 		
 		if(cPosPlayer1.vector.y + cRectangle.height >= worldHeight) { // touching ground?
 			if(keysActive[TOOLBOX.KeyCode.KEY_D]) { cPosPlayer1.vector.x += groundSpeedBonus * dt; }
@@ -222,9 +266,27 @@ SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 			cCooldownPlayer2.jump = jumpCooldown;
 		}
 		
-		if(keysActive[TOOLBOX.KeyCode.UP_ARROW]) { cPosPlayer2.vector.y += - moveSpeed * dt; } // go to jump state
 		if(keysActive[TOOLBOX.KeyCode.RIGHT_ARROW]) { cPosPlayer2.vector.x += moveSpeed * dt; }
 		if(keysActive[TOOLBOX.KeyCode.LEFT_ARROW]) { cPosPlayer2.vector.x += - moveSpeed * dt; }
+		
+		// Go invulnerable
+		if(keysActive[TOOLBOX.KeyCode.DOWN_ARROW] && !keysActive[TOOLBOX.KeyCode.RIGHT_ARROW] && !keysActive[TOOLBOX.KeyCode.LEFT_ARROW] && !keysActive[TOOLBOX.KeyCode.UP_ARROW] && !dashPlayer2) {
+			var cScore = this.EntityManager.getComponent(player2, 'CScore');
+			cScore.timeInvulnerable += dt;
+			var cInvulnerable = this.EntityManager.getComponent(player2, 'CInvulnerable');
+			if(!cInvulnerable) {
+				this.EntityManager.addComponent(player2, new CInvulnerable());
+				var cRender = this.EntityManager.getComponent(player2, 'CRender');
+				cRender.alpha = 0.5;
+			}
+		} else { // Leave inverunablity
+			var cInvulnerable = this.EntityManager.getComponent(player2, 'CInvulnerable');
+			if(cInvulnerable) {
+				this.EntityManager.removeComponent(player2, 'CInvulnerable');
+				var cRender = this.EntityManager.getComponent(player2, 'CRender');
+				cRender.alpha = 1;
+			}
+		}
 		
 		if(cPosPlayer2.vector.y + cRectangle.height >= worldHeight) { // touching ground?
 			if(keysActive[TOOLBOX.KeyCode.RIGHT_ARROW]) { cPosPlayer2.vector.x += groundSpeedBonus * dt; }
@@ -264,13 +326,124 @@ STouchWall.process = function(players, worldWidth) {
 			while(cPos.vector.x > worldWidth){
 				cPos.vector.x = 0 - cRectangle.width;
 			}
-		} else if(cPos.vector.x +cRectangle.width< 0) {
+		} else if(cPos.vector.x +cRectangle.width < 0) {
 			while(cPos.vector.x < 0){
 				cPos.vector.x = worldWidth;
 			}
 		}
 	}
 }
+
+// Box collsion
+var SBoxCollision = new SBase();
+SBoxCollision.process = function(player1, player2) {
+	var cRectangle1 = this.EntityManager.getComponent(player1, 'CRectangle');
+	var cPos1 = this.EntityManager.getComponent(player1, 'CPos');
+	
+	var cRectangle2 = this.EntityManager.getComponent(player2, 'CRectangle');
+	var cPos2 = this.EntityManager.getComponent(player2, 'CPos');
+	
+	var r1 = new TOOLBOX.Rectangle(cPos1.vector.x, cPos1.vector.y, cRectangle1.width, cRectangle1.height);
+	var r2 = new TOOLBOX.Rectangle(cPos2.vector.x, cPos2.vector.y, cRectangle2.width, cRectangle2.height);
+	
+	if(TOOLBOX.CollisionDetection2D.AABBCollision(r1, r2)) { // If collision
+		var cDash1 = this.EntityManager.getComponent(player1, 'CDash');
+		var cDash2 = this.EntityManager.getComponent(player2, 'CDash');
+		var cInvulnerable1 = this.EntityManager.getComponent(player1, 'CInvulnerable');
+		var cInvulnerable2 = this.EntityManager.getComponent(player2, 'CInvulnerable');
+		
+		if(!cInvulnerable1 && !cInvulnerable2) {
+			if(cDash1) {
+				if(cDash2) {
+					// point for the one in dash first
+					if(cDash1.timePassed > cDash2) {
+						// point for player 1
+						this._awardPointToPlayer(player1);
+					} else {
+						// point for player 2
+						this._awardPointToPlayer(player2);
+					}
+				} else {
+					// point for player 1
+					this._awardPointToPlayer(player1);
+				}
+				
+				// Reset level
+				this._resetLevel(player1, player2);
+			} else if(cDash2) {
+				// point for player 2
+				this._awardPointToPlayer(player2);
+				
+				// Reset level
+				this._resetLevel(player1, player2);
+			}
+		}
+	}
+}
+SBoxCollision._awardPointToPlayer = function(player) {
+	var cScore = this.EntityManager.getComponent(player, 'CScore');
+	cScore.points += 1;
+}
+SBoxCollision._resetLevel = function(player1, player2) {
+	
+	// Reset player 1
+	
+	var cDash1 = this.EntityManager.getComponent(player1, 'CDash');
+	if(cDash1) {
+		this.EntityManager.removeComponent(player1, 'CDash');
+		this.EntityManager.addComponent(player1, new CVelocity(0, 0));
+	}
+	
+	var cPos1 = this.EntityManager.getComponent(player1, 'CPos');
+	cPos1.vector.x = 100;
+	cPos1.vector.y = 100;
+	
+	var cVelocity1 = this.EntityManager.getComponent(player1, 'CVelocity');
+	cVelocity1.vector.x = 0;
+	cVelocity1.vector.y = 0;
+	
+	var cCoolDown1 = this.EntityManager.getComponent(player1, 'CCooldown');
+	cCoolDown1.jump = 0;
+	cCoolDown1.dash = 0;
+	
+	var cScore1 = this.EntityManager.getComponent(player1, 'CScore');
+	cScore1.timeInvulnerable = 0;
+	
+	// Reset player 2
+	
+	var cDash2 = this.EntityManager.getComponent(player2, 'CDash');
+	if(cDash2) {
+		this.EntityManager.removeComponent(player2, 'CDash');
+		this.EntityManager.addComponent(player2, new CVelocity(0, 0));
+	}
+	
+	var cPos2 = this.EntityManager.getComponent(player2, 'CPos');
+	cPos2.vector.x = 650;
+	cPos2.vector.y = 100;
+	
+	var cVelocity2 = this.EntityManager.getComponent(player2, 'CVelocity');
+	cVelocity2.vector.x = 0;
+	cVelocity2.vector.y = 0;
+	
+	var cCoolDown2 = this.EntityManager.getComponent(player2, 'CCooldown');
+	cCoolDown2.jump = 0;
+	cCoolDown2.dash = 0;
+	
+	var cScore2 = this.EntityManager.getComponent(player2, 'CScore');
+	cScore2.timeInvulnerable = 0;
+}
+
+// Display Score
+SDisplayScore = new SBase();
+SDisplayScore.process = function(player1, player2) {
+	var cScore1 = this.EntityManager.getComponent(player1, 'CScore');
+	var cScore2 = this.EntityManager.getComponent(player2, 'CScore');
+	document.getElementById("Player1Score").innerHTML = cScore1.points;
+	document.getElementById("Player2Score").innerHTML = cScore2.points;
+	document.getElementById("Player1TimeInvunerable").innerHTML = cScore1.timeInvulnerable;
+	document.getElementById("Player2TimeInvunerable").innerHTML = cScore2.timeInvulnerable;
+}
+
 // Dash System
 var SDash = new SBase();
 SDash.process = function(dt, startSpeed, endSpeed) {
@@ -340,6 +513,24 @@ SRender.process = function(toolboxRenderContext, toolboxAssetManager) {
 		var img = toolboxAssetManager.getImage(componentRender.imgId);
 		
 		// Perform the logic / update the data
-		toolboxRenderContext.renderObject(img, componentPos.vector.x, componentPos.vector.y);
+		if(componentRender.alpha != 1) { // TODO: Can this if be eliminated???
+			toolboxRenderContext.renderObjectWithAlpha(img, componentPos.vector.x, componentPos.vector.y, componentRender.alpha);
+		} else {
+			toolboxRenderContext.renderObject(img, componentPos.vector.x, componentPos.vector.y);
+		}
 	}
 }
+
+/*
+
+// Combo algo
+
+
+var buffer = [q, h, j, w, a, w, s, w, w, q];
+for(i=0; i < buffer.length; i++) {
+	if(buffer[i] == 'w') {
+		
+	}
+}
+
+*/
