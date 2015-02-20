@@ -117,6 +117,15 @@ CScore = function(points) {
 }
 CScore.prototype = {type : 'CScore' }
 
+// Fade
+CFade = function(startAlpha, endAlpha, startTime, duration) {
+	this.startAlpha = startAlpha;
+	this.endAlpha = endAlpha;
+	this.startTime = startTime;
+	this.duration = duration;
+}
+CFade.prototype = {type : 'CFade' }
+
 /* System (a generic class that always takes a list of components, with their entities as index) */
 // e.g. listOfSomeType = { 0 : obj, 5 : obj, 8 : obj } is returned by EntityManager.getAllComponentsOfType('SomeType');
 
@@ -136,7 +145,21 @@ SBase.prototype = {
 /* Sub Systems */
 // Will be created on top of BaseSystem to implement specific logic on a set of components and overwrites "process" (no data in objects, please)
 
-var SAirborn
+var SFade = new SBase();
+SFade.process = function(dt) {
+	var componentsFade = this.EntityManager.getAllComponentsOfType('CFade'); // Process for all entities with component CFade
+	for(entity in componentsFade) {
+		var cFade = componentsFade[entity];
+		var cRender = this.EntityManager.getComponent(entity, 'CRender');
+		
+		var fadePerSecond = (cFade.startAlpha - cFade.endAlpha) / cFade.duration;
+		cRender.alpha -= fadePerSecond * dt;
+		
+		if(cRender.alpha <= cFade.endAlpha) {
+			this.EntityManager.destroy(entity);
+		}
+	}
+}
 
 var SControlChar = new SBase();
 SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
@@ -516,6 +539,16 @@ SDash.process = function(dt, startSpeed, endSpeed) {
 			cPos.vector.x = cPos.vector.x + (cDash.x * speed * dt);
 			cPos.vector.y = cPos.vector.y + (cDash.y * speed * dt);
 			cDash.duration -= dt;
+			
+			// Create fade animation
+			var cRender = this.EntityManager.getComponent(entity, 'CRender');
+			var newCRender = new CRender(cRender.imgId);
+			newCRender.alpha = 0.2;
+			var e = this.EntityManager.create();
+			this.EntityManager
+				.addComponent(e, new CPos(cPos.vector.x, cPos.vector.y))
+				.addComponent(e, newCRender)
+				.addComponent(e, new CFade(newCRender.alpha, 0, new Date().getTime(), 0.2));
 		}
 	}
 }

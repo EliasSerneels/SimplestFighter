@@ -701,7 +701,6 @@ TOOLBOX.EntityManager = function() {
 	this.removeFromGroup = function(entity, group) {
 		for(i=0; i < groups[group].length; i++) {
 			if(groups[group][i] === entity) {
-				console.log("check");
 				groups[group].splice(i, 1);
 			}
 		}

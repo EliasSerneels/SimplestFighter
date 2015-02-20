@@ -30,6 +30,7 @@ function init() {
 	GAME.EntityManager.registerComponentType('CDash');
 	GAME.EntityManager.registerComponentType('CScore');
 	GAME.EntityManager.registerComponentType('CInvulnerable');
+	GAME.EntityManager.registerComponentType('CFade');
 	
 	// Create a group for basic collisions
 	GAME.EntityManager.createGroup('COLLISION_BODIES_PLAYERS');
@@ -46,6 +47,7 @@ function init() {
 	SDash.setEntityManager(GAME.EntityManager);
 	SBoxCollision.setEntityManager(GAME.EntityManager);
 	SDisplayScore.setEntityManager(GAME.EntityManager);
+	SFade.setEntityManager(GAME.EntityManager);
 
 	// Create player 1
 	var e = GAME.EntityManager.create();
@@ -87,6 +89,7 @@ function updateGame() {
 	STouchGround.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
 	STouchRoof.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'));
 	STouchWall.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
+	SFade.process(GAME.Engine.getDeltaTime());
 	SRender.process(GAME.Renderer, GAME.AssetManager);
 }
 
