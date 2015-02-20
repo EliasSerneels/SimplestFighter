@@ -40,6 +40,7 @@ function init() {
 	SControlChar.setEntityManager(GAME.EntityManager);
 	SGravity.setEntityManager(GAME.EntityManager);
 	STouchGround.setEntityManager(GAME.EntityManager);
+	STouchRoof.setEntityManager(GAME.EntityManager);
 	STouchWall.setEntityManager(GAME.EntityManager);
 	SCoolDown.setEntityManager(GAME.EntityManager);
 	SDash.setEntityManager(GAME.EntityManager);
@@ -77,14 +78,15 @@ function init() {
 function updateGame() {
 	SControlChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime(), GAME.EntityManager.getByTag('PLAYER1'), 800);
 	SControlChar.process(GAME.EventHandler, GAME.Engine.getDeltaTime(), GAME.EntityManager.getByTag('PLAYER2'), 800);
-	SGravity.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 3);
+	SGravity.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 6);
 	SMove.process(GAME.Engine.getDeltaTime());
-	STouchGround.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
 	SDash.process(GAME.Engine.getDeltaTime(), 100, 2000);
-	STouchWall.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
 	SCoolDown.process(GAME.Engine.getDeltaTime());
 	SBoxCollision.process(GAME.EntityManager.getByTag('PLAYER1'), GAME.EntityManager.getByTag('PLAYER2'));
 	SDisplayScore.process(GAME.EntityManager.getByTag('PLAYER1'), GAME.EntityManager.getByTag('PLAYER2'));
+	STouchGround.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
+	STouchRoof.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'));
+	STouchWall.process(GAME.EntityManager.getGroup('COLLISION_BODIES_PLAYERS'), 800);
 	SRender.process(GAME.Renderer, GAME.AssetManager);
 }
 

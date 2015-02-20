@@ -352,6 +352,19 @@ STouchGround.process = function(players, worldHeight) {
 		}
 	}
 }
+
+var STouchRoof = new SBase();
+STouchRoof.process = function(players) {
+	for(entity in players) {
+		var cPos = this.EntityManager.getComponent(entity, 'CPos');
+		var cRectangle = this.EntityManager.getComponent(entity, 'CRectangle');
+		
+		if(cPos.vector.y < 0) {
+			cPos.vector.y = 0;
+		}
+	}
+}
+
 var STouchWall = new SBase();
 STouchWall.process = function(players, worldWidth) {
 	for(entity in players) {
