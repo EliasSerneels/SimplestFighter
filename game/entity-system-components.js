@@ -164,21 +164,24 @@ SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 	var dashPlayer1 = false;
 	if(cVelocityPlayer1 != null && !dashPlayer1) {
 		if(buffer[0] && buffer[1] && cCooldownPlayer1.dash <= 0) {
-			if(buffer[0].keyCode == TOOLBOX.KeyCode.KEY_W && buffer[1].keyCode == TOOLBOX.KeyCode.KEY_W && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			// if(buffer[0].keyCode == TOOLBOX.KeyCode.KEY_W && buffer[1].keyCode == TOOLBOX.KeyCode.KEY_W && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			if(this._checkDoubleTap(buffer, TOOLBOX.KeyCode.KEY_W, TOOLBOX.KeyCode.KEY_A, TOOLBOX.KeyCode.KEY_S, TOOLBOX.KeyCode.KEY_D, doubleTapDelay, timeSinceKeyUp)) {
 				// Dash upwards combo detected
 				this.EntityManager.addComponent(player1, new CDash(dashDuration, 0, -1));
 				this.EntityManager.removeComponent(player1, 'CVelocity'); // This object cannot change velocity while mid-dash
 				dashPlayer1 = true;
 			}
 			
-			if(buffer[0].keyCode == TOOLBOX.KeyCode.KEY_D && buffer[1].keyCode == TOOLBOX.KeyCode.KEY_D && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			// if(buffer[0].keyCode == TOOLBOX.KeyCode.KEY_D && buffer[1].keyCode == TOOLBOX.KeyCode.KEY_D && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			if(this._checkDoubleTap(buffer, TOOLBOX.KeyCode.KEY_D, TOOLBOX.KeyCode.KEY_A, TOOLBOX.KeyCode.KEY_S, TOOLBOX.KeyCode.KEY_W, doubleTapDelay, timeSinceKeyUp)) {
 				// Dash upwards combo detected
 				this.EntityManager.addComponent(player1, new CDash(dashDuration, 1, 0));
 				this.EntityManager.removeComponent(player1, 'CVelocity'); // This object cannot change velocity while mid-dash
 				dashPlayer1 = true;
 			}
 			
-			if(buffer[0].keyCode == TOOLBOX.KeyCode.KEY_A && buffer[1].keyCode == TOOLBOX.KeyCode.KEY_A && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			// if(buffer[0].keyCode == TOOLBOX.KeyCode.KEY_A && buffer[1].keyCode == TOOLBOX.KeyCode.KEY_A && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			if(this._checkDoubleTap(buffer, TOOLBOX.KeyCode.KEY_A, TOOLBOX.KeyCode.KEY_W, TOOLBOX.KeyCode.KEY_S, TOOLBOX.KeyCode.KEY_D, doubleTapDelay, timeSinceKeyUp)) {
 				// Dash upwards combo detected
 				this.EntityManager.addComponent(player1, new CDash(dashDuration, -1, 0));
 				this.EntityManager.removeComponent(player1, 'CVelocity'); // This object cannot change velocity while mid-dash
@@ -234,21 +237,24 @@ SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 	var dashPlayer2 = false;
 	if(cVelocityPlayer2 != null  && !dashPlayer2) {
 		if(buffer[0] && buffer[1] && cCooldownPlayer2.dash <= 0) {
-			if(buffer[0].keyCode == TOOLBOX.KeyCode.UP_ARROW && buffer[1].keyCode == TOOLBOX.KeyCode.UP_ARROW && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			// if(buffer[0].keyCode == TOOLBOX.KeyCode.UP_ARROW && buffer[1].keyCode == TOOLBOX.KeyCode.UP_ARROW && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			if(this._checkDoubleTap(buffer, TOOLBOX.KeyCode.UP_ARROW, TOOLBOX.KeyCode.DOWN_ARROW, TOOLBOX.KeyCode.RIGHT_ARROW, TOOLBOX.KeyCode.LEFT_ARROW, doubleTapDelay, timeSinceKeyUp)) {
 				// Dash upwards combo detected
 				this.EntityManager.addComponent(player2, new CDash(dashDuration, 0, -1));
 				this.EntityManager.removeComponent(player2, 'CVelocity'); // This object cannot change velocity while mid-dash
 				dashPlayer2 = true;
 			}
 			
-			if(buffer[0].keyCode == TOOLBOX.KeyCode.RIGHT_ARROW && buffer[1].keyCode == TOOLBOX.KeyCode.RIGHT_ARROW && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			// if(buffer[0].keyCode == TOOLBOX.KeyCode.RIGHT_ARROW && buffer[1].keyCode == TOOLBOX.KeyCode.RIGHT_ARROW && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			if(this._checkDoubleTap(buffer, TOOLBOX.KeyCode.RIGHT_ARROW, TOOLBOX.KeyCode.DOWN_ARROW, TOOLBOX.KeyCode.UP_ARROW, TOOLBOX.KeyCode.LEFT_ARROW, doubleTapDelay, timeSinceKeyUp)) {
 				// Dash upwards combo detected
 				this.EntityManager.addComponent(player2, new CDash(dashDuration, 1, 0));
 				this.EntityManager.removeComponent(player2, 'CVelocity'); // This object cannot change velocity while mid-dash
 				dashPlayer2 = true;
 			}
 			
-			if(buffer[0].keyCode == TOOLBOX.KeyCode.LEFT_ARROW && buffer[1].keyCode == TOOLBOX.KeyCode.LEFT_ARROW && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			// if(buffer[0].keyCode == TOOLBOX.KeyCode.LEFT_ARROW && buffer[1].keyCode == TOOLBOX.KeyCode.LEFT_ARROW && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
+			if(this._checkDoubleTap(buffer, TOOLBOX.KeyCode.LEFT_ARROW, TOOLBOX.KeyCode.DOWN_ARROW, TOOLBOX.KeyCode.RIGHT_ARROW, TOOLBOX.KeyCode.UP_ARROW, doubleTapDelay, timeSinceKeyUp)) {
 				// Dash upwards combo detected
 				this.EntityManager.addComponent(player2, new CDash(dashDuration, -1, 0));
 				this.EntityManager.removeComponent(player2, 'CVelocity'); // This object cannot change velocity while mid-dash
@@ -293,6 +299,36 @@ SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 			if(keysActive[TOOLBOX.KeyCode.LEFT_ARROW]) { cPosPlayer2.vector.x += - groundSpeedBonus * dt; }
 		}
 	}
+}
+SControlChar._findTaps = function(buffer, keyCodeInclude, keyCodeExclude1, keyCodeExclude2, keyCodeExclude3) {
+	var taps = [];
+	var depth = buffer.length; // Check last X inputs
+	for(i=0; i < buffer.length; i++) {
+		if(buffer[i] !== undefined) {
+			if(buffer[i].keyCode == keyCodeInclude) {
+				taps.push(buffer[i]);
+				if(taps.length == 2) {
+					return taps;
+				}
+			} else if(buffer[i].keyCode == keyCodeExclude1) {
+				return taps;
+			} else if(buffer[i].keyCode == keyCodeExclude2) {
+				return taps;
+			} else if(buffer[i].keyCode == keyCodeExclude3) {
+				return taps;
+			}
+		}
+	}
+	return taps;
+}
+SControlChar._checkDoubleTap = function(buffer, keyCodeInclude, keyCodeExclude1, keyCodeExclude2, keyCodeExclude3, maxDelay, maxTimeKeyUp) {
+	var taps = this._findTaps(buffer, keyCodeInclude, keyCodeExclude1, keyCodeExclude2, keyCodeExclude3);
+	if(taps.length == 2) {
+		if(taps[0].timeStamp - taps[1].timeStamp < maxDelay && new Date().getTime() - taps[0].timeStamp < maxTimeKeyUp) {
+			return true;
+		}
+	}
+	return false;
 }
 
 var SCoolDown = new SBase();
@@ -403,8 +439,8 @@ SBoxCollision._resetLevel = function(player1, player2) {
 	cVelocity1.vector.y = 0;
 	
 	var cCoolDown1 = this.EntityManager.getComponent(player1, 'CCooldown');
-	cCoolDown1.jump = 0;
-	cCoolDown1.dash = 0;
+	cCoolDown1.jump = 1;
+	cCoolDown1.dash = 1;
 	
 	var cScore1 = this.EntityManager.getComponent(player1, 'CScore');
 	cScore1.timeInvulnerable = 0;
@@ -426,8 +462,8 @@ SBoxCollision._resetLevel = function(player1, player2) {
 	cVelocity2.vector.y = 0;
 	
 	var cCoolDown2 = this.EntityManager.getComponent(player2, 'CCooldown');
-	cCoolDown2.jump = 0;
-	cCoolDown2.dash = 0;
+	cCoolDown2.jump = 1;
+	cCoolDown2.dash = 1;
 	
 	var cScore2 = this.EntityManager.getComponent(player2, 'CScore');
 	cScore2.timeInvulnerable = 0;
@@ -521,16 +557,4 @@ SRender.process = function(toolboxRenderContext, toolboxAssetManager) {
 	}
 }
 
-/*
 
-// Combo algo
-
-
-var buffer = [q, h, j, w, a, w, s, w, w, q];
-for(i=0; i < buffer.length; i++) {
-	if(buffer[i] == 'w') {
-		
-	}
-}
-
-*/
