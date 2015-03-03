@@ -173,7 +173,7 @@ SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 	var doubleTapDelay = 400; // In milliseconds
 	var dashDuration = 0.4; // In seconds
 	var timeSinceKeyUp = 400; // In milliseconds
-	var groundSpeedBonus = 60;
+	var groundSpeedBonus = 40;
 	
 	var buffer = toolboxEventHandler.getBuffer();
 	var keysActive = toolboxEventHandler.getKeysActive();

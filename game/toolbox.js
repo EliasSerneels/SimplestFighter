@@ -15,7 +15,6 @@
 /* **** IMPROVEMENTS (???) ****
 
  - Game loop : http://codeofrob.com/archive/2011/03/17/a-javascript-game-loop-for-multiplayer-webgl.aspx
- - Support for WebGL (better suited for games than canvas). Rethink render context (is facade necessary?).
  
 */
 
