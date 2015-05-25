@@ -1,0 +1,67 @@
+Fun = nieuwe manieren leren om te winnen = nieuwe tactieken ontdekken
+Fun += mastering van de controls (/eigen lichaam, perfectioneren mechanics - most basic voorbeeld van dit is OSU)
+Tactiek komt voor uit de combinatie van opties (bv ontwijken is 1 tactiek, invuln. is een andere tactiek, blocken zou ook een tactiek kunnen zijn, ...)
+We moeten dus proberen met een beperekt aantal controls een zo groot mogelijke variatie aan tactieken mogelijk maken, waaronder emergent behavior, en daarbovenop moeten controls ook gemastered kunnen worden met oefening (gewoon een knopje drukken heeft geen mastering nodig, ontdekken van interne cooldown, snelle reacties in veranderen van state, combos, ... wel)
+
+"All good games can be played on a parallel level, if there is only one challenge to surmount, then we will grok the game quickly"
+
+Depth = nesting (we want A LOT of depth)
+
+
+
+
+ 1. Spel maken met squares
+ 2. Alle combos implementeren en playtesten
+ 3. Graphics toevoegen (animaties) -> zo kunnen we echte "chars" hebben, hitbox blijft gewoon square
+
+
+
+
+
+Game challenges
+---------------
+
+ - Combos masteren
+ - Nieuwe tactieken leren (ontdekken)
+ - Tactiek opponent analyseren
+ - Beste counter-tactiek vinden voor elke opponent tactiek
+
+
+
+
+
+
+
+
+Possible combos
+---------------
+
+[ground]   +  [up] [x2]      = *
+[airborn]  +  [up] [x2]      = dash
+[ground]   +  [left] [x2]    = *
+[airborn]  +  [left] [x2]    = dash
+[ground]   +  [right][x2]    = *
+[airborn]  +  [right] [x2]   = dash
+[ground]   +  [left][right]  = *
+[airborn]  +  [left][right]  = *
+[ground]   +  [right][left]  = *
+[airborn]  +  [right][left]  = *
+[mid-dash] +  [left][right]  = *
+[mid-dash] +  [right][left]  = *
+
+
+*Te bepalen, hiermee kunnen nog nieuwe combos gemaakt worden als mid-animation + andere combo
+
+Wat als we een oneindige chaining van combos toestaan? waar combos altijd in bepaalde andere combos overgaan en op een bepaald moment bv terug naar een vorige combo etc zodat er verschillende branches en cycles van mogelijke combos ontstaan. Elke combo heeft een animatie (en een tijd daaraan gelinkt) en dat is het tijd 'window' waarbinnen je naar een volgende combo kan gaan.
+
+
+Over tactiek
+------------
+
+Wat als we nu de interne cooldown voor elke dash (veel) groter maken zodat continue dashen niet meer mogelijk is? Dan wordt de doelstelling om in een positie te komen waar de andere je niet verwacht en hem zo te verassen. Zo kan er ook een extra combo zijn wanneer je net gedashed hebt (en in dezelfde richting nog eens te dubbel tappen) zodat je een tijdelijke extra move hebt (totdat de interne cd over is).
+
+Iets als een slow / stun toevoegen zou mss helpen (bv [right][left]) maakt een mini tornado die een schokwave uitstuurt naar X pixels aan elke kant, als deze de vijand raakt zijn al zijn moves Y% trager.
+
+Teleportren toevoegen zou leuk zijn. (denk aan de film jumper, bleach, teleporteren in fighting games is fun, ...). Bv dash + [left][right] om in de dashrichting te teleporteren naar X pixels verder (dit zou dash cooldown resetten).
+
+Invisibility?

@@ -1,11 +1,11 @@
 // TagManager => Add to entity system
 // Based on the Artemis framework
-// Allow entities to be "tagged" with a unique string to circumvent creating unique components when not necesary
-// e.g. "CAMERA" : CameraComponent = PositionComponent (x, y) + SquareComponent (width, height) SO tag it with "camera" and update/read that single entity in systems
-// e.g. "PLAYER" : Instead of a player component to make a player move, label a moveable (pos+velo+accel) as player and only update that one on input
-// This way you could also have different almost-the-same objects like "CAMERA" and "SUBCAMERA", or "PLAYER" and "PUPPET"
+// Allow entities to be 'tagged' with a unique string to circumvent creating unique components when not necesary
+// e.g. 'CAMERA' : CameraComponent = PositionComponent (x, y) + SquareComponent (width, height) SO tag it with 'camera' and update/read that single entity in systems
+// e.g. 'PLAYER' : Instead of a player component to make a player move, label a moveable (pos+velo+accel) as player and only update that one on input
+// This way you could also have different almost-the-same objects like 'CAMERA' and 'SUBCAMERA', or 'PLAYER' and 'PUPPET'
 // It depends on when it's a good idea to create a component and when to create a unique label (or group like in Artemis)
-// This might depend on when you need extra data (use component) or only a label (like: PlayerComponent = { 'player' = true; } => Use "tag" or "group" instead)
+// This might depend on when you need extra data (use component) or only a label (like: PlayerComponent = { 'player' = true; } => Use 'tag' or 'group' instead)
 
 
 // SystemManager
@@ -62,7 +62,7 @@ CRectangle = function(width, height) {
 CRectangle.prototype = { type : 'CRectangle' };
 
 // Shape Component (mainly for collision detection
-// @param shapeType "poly" or "circle"
+// @param shapeType 'poly' or 'circle'
 // @param shapeToolboxObject Circle, polygon, ... object from the toolbox
 CShape = function(shapeType, shapeToolboxObject) {
 	this.shapeType = shapeType;
@@ -129,7 +129,7 @@ CFade.prototype = {type : 'CFade' }
 /* System (a generic class that always takes a list of components, with their entities as index) */
 // e.g. listOfSomeType = { 0 : obj, 5 : obj, 8 : obj } is returned by EntityManager.getAllComponentsOfType('SomeType');
 
-// In most simple form, it has a "signature-method" (=process) to call each game tick
+// In most simple form, it has a 'signature-method' (=process) to call each game tick
 // Process will be overwritten by specific sub-systems
 var SBase = function() {}
 SBase.prototype = {
@@ -143,7 +143,7 @@ SBase.prototype = {
 }
 
 /* Sub Systems */
-// Will be created on top of BaseSystem to implement specific logic on a set of components and overwrites "process" (no data in objects, please)
+// Will be created on top of BaseSystem to implement specific logic on a set of components and overwrites 'process' (no data in objects, please)
 
 var SFade = new SBase();
 SFade.process = function(dt) {
@@ -186,6 +186,7 @@ SControlChar.process = function(toolboxEventHandler, dt, player, worldHeight) {
 	// Check input buffer for combos
 	var dashPlayer1 = false;
 	if(cVelocityPlayer1 != null && !dashPlayer1) {
+    // Player 1 dash
 		if(buffer[0] && buffer[1] && cCooldownPlayer1.dash <= 0) {
 			// if(buffer[0].keyCode == TOOLBOX.KeyCode.KEY_W && buffer[1].keyCode == TOOLBOX.KeyCode.KEY_W && buffer[0].timeStamp - buffer[1].timeStamp < doubleTapDelay && new Date().getTime() - buffer[0].timeStamp < timeSinceKeyUp) {
 			if(this._checkDoubleTap(buffer, TOOLBOX.KeyCode.KEY_W, TOOLBOX.KeyCode.KEY_A, TOOLBOX.KeyCode.KEY_S, TOOLBOX.KeyCode.KEY_D, doubleTapDelay, timeSinceKeyUp)) {
@@ -428,7 +429,7 @@ SBoxCollision.process = function(player1, player2) {
 			if(cDash1) {
 				if(cDash2) {
 					// point for the one in dash first
-					if(cDash1.timePassed > cDash2) {
+					if(cDash1.timePassed > cDash2.timePassed) {
 						// point for player 1
 						this._awardPointToPlayer(player1);
 					} else {
@@ -510,10 +511,10 @@ SDisplayScore = new SBase();
 SDisplayScore.process = function(player1, player2) {
 	var cScore1 = this.EntityManager.getComponent(player1, 'CScore');
 	var cScore2 = this.EntityManager.getComponent(player2, 'CScore');
-	document.getElementById("Player1Score").innerHTML = cScore1.points;
-	document.getElementById("Player2Score").innerHTML = cScore2.points;
-	document.getElementById("Player1TimeInvunerable").innerHTML = cScore1.timeInvulnerable;
-	document.getElementById("Player2TimeInvunerable").innerHTML = cScore2.timeInvulnerable;
+	document.getElementById('Player1Score').innerHTML = cScore1.points;
+	document.getElementById('Player2Score').innerHTML = cScore2.points;
+	document.getElementById('Player1TimeInvunerable').innerHTML = cScore1.timeInvulnerable;
+	document.getElementById('Player2TimeInvunerable').innerHTML = cScore2.timeInvulnerable;
 }
 
 // Dash System
